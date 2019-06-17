@@ -28,6 +28,7 @@ setuptools.setup(
     zip_safe=False,
     install_requires=[
         'bubot_Core',
+		'bubot_Modbus',
         'aio_modbus_client'
     ]
 )
