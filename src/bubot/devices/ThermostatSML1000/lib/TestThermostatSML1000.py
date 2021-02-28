@@ -27,7 +27,7 @@ class TestThermostatSML1000(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         logging.basicConfig(level=logging.DEBUG)
-        cls.device_address = 0xa1
+        cls.device_address = 165
         cls.address = ('192.168.1.25', 502)
         cls.device = Device(cls.device_address, Protocol(Modbus(host=cls.address[0], port=cls.address[1])))
 
