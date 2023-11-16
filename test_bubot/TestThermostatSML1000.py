@@ -6,7 +6,7 @@ import logging
 import asyncio
 
 
-class TestThermostatSML1000(unittest.TestCase):
+class TestThermostatSML1000(unittest.IsolatedAsyncioTestCase):
     net_interface = "192.168.1.11"
     config = {
         '/oic/con': {
@@ -48,25 +48,14 @@ class TestThermostatSML1000(unittest.TestCase):
 
     async def test_update_switch(self):
         value = False
-        result1 = (await self.device.retrieve_switch())['value']
-        result2 = (await self.device.update_switch(not result1))['value']
-        result3 = (await self.device.retrieve_switch())['value']
+        result1 = await self.device.retrieve_power()
+        await self.device.update_power(not result1)
+        result3 = await self.device.retrieve_power()
         self.assertEqual(result3, not result1)
-        result4 = (await self.device.update_switch(result1))['value']
-        result5 = (await self.device.retrieve_switch())['value']
+        await self.device.update_power(result1)
+        result5 = await self.device.retrieve_power()
         self.assertEqual(result5, result1)
 
-    async def test_update_switch(self):
-        value = False
-        result1 = (await self.device.retrieve_switch())['value']
-        result2 = (await self.device.update_switch(not result1))['value']
-        result3 = (await self.device.retrieve_switch())['value']
-        self.assertEqual(result3, not result1)
-        result4 = (await self.device.update_switch(result1))['value']
-        result5 = (await self.device.retrieve_switch())['value']
-        self.assertEqual(result5, result1)
-
-    @async_test
     async def test_find_devices(self):
         modbus_device = ModbusDevice.init_from_config(self.modbus_config, path=self.config_path)
         mobus_task = await wait_run_device(modbus_device)
@@ -76,7 +65,6 @@ class TestThermostatSML1000(unittest.TestCase):
         res = await self.device.action_find_devices()
         pass
 
-    @async_test
     async def test_is_device(self):
         brightness = 60
         modbus_device = ModbusDevice.init_from_config(self.modbus_config, path=self.config_path)
@@ -88,7 +76,6 @@ class TestThermostatSML1000(unittest.TestCase):
         self.assertTrue(res)
         pass
 
-    @async_test
     async def test_echo_get_light_baseline(self):
         await self.device.run()
         from aio_modbus_client.ModbusProtocolEcho import ModbusProtocolEcho
@@ -100,7 +87,6 @@ class TestThermostatSML1000(unittest.TestCase):
         result = await self.device.modbus.read_param('level_blue')
         pass
 
-    @async_test
     async def test_get_light_baseline(self):
         main = await self.device.run()
         await main
@@ -109,14 +95,12 @@ class TestThermostatSML1000(unittest.TestCase):
         result = await self.device.modbus.read_param('level_blue')
         pass
 
-    @async_test
     def test_get_light1_baseline(self):
         self.device = Device.init_from_config(None, dict(handler=Device.__name__, data=self.config))
         message = OcfRequest(**dict(operation='get', uri='/light'))
         result = self.device.on_get_request(message)
         pass
 
-    @async_test
     def test_set_light_baseline(self):
         self.device = Device.init_from_config(self.config)
         data = dict(value=True, brightness=100)
@@ -125,7 +109,6 @@ class TestThermostatSML1000(unittest.TestCase):
         result = self.device.on_post_request(message)
         self.assertDictEqual(result, data)
 
-    @async_test
     def test_get_light_brightness(self):
         self.device = Device.init_from_config(None, dict(handler=Device.__name__, data=self.config))
         message = OcfRequest(**dict(operation='get', uri='/light', query={'rt': ['oic.r.light.brightness']}))
@@ -134,21 +117,18 @@ class TestThermostatSML1000(unittest.TestCase):
         # self.devices.run()
         pass
 
-    @async_test
     async def test_run(self):
         await self.device.run()
         # result = await self.device.coap.discovery_resource()
         await asyncio.sleep(600)
         pass
 
-    @async_test
     async def test_discovery(self):
         await self.device.run()
         result = await self.device.coap.discovery_resource()
         await asyncio.sleep(600)
         pass
 
-    @async_test
     async def test_local_discovery(self):
         msg = OcfRequest(**dict(
             uri_path=['oic', 'res'],

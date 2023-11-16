@@ -23,7 +23,7 @@ class ThermostatSML1000(ModbusSlave):
     async def retrieve_power(self):
         res = await self.modbus.read_param('power')
         self.set_param('/power', 'value', res)
-        return self.get_param('/power')
+        return res
 
     async def retrieve_temperature_internal(self):
         res = await self.modbus.read_param('temperature_internal')
@@ -38,8 +38,7 @@ class ThermostatSML1000(ModbusSlave):
     async def update_power(self, value):
         if value is not None:
             await self.modbus.write_param('power', value)
-        self.set_param('/power', None, value)
-        return self.get_param('/power')
+        self.set_param('/power', value, value)
 
     async def on_idle(self):
         try:

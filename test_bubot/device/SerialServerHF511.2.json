@@ -1,10 +1,16 @@
 {
   "/oic/d": {
-    "di": "6d350e5d-8b7c-459e-a671-e5860b318796"
+    "di": "2",
+    "piid": "54dd3b80-8ab8-4610-bb44-01b417bb6fd9"
   },
   "/oic/con": {
-    "udpCoapPort": 61169,
+    "udpCoapPort": 50683,
     "host": "192.168.1.25"
+  },
+  "/oic/sec/pstat": {
+    "dos": {
+      "s": 0
+    }
   },
   "/modbus_msg": {
     "slave": 130,
