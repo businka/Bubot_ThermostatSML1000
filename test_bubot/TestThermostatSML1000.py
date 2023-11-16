@@ -1,25 +1,22 @@
 import unittest
-from bubot.devices.ThermostatSML1000.ThermostatSML1000 import ThermostatSML1000 as Device
-from bubot.devices.SerialServerHF511.SerialServerHF511 import SerialServerHF511 as ModbusDevice
-from bubot.OcfMessage import OcfRequest
-from bubot.TestHelper import async_test, wait_run_device, get_config_path, wait_cancelled_device
+from bubot_thermostat_sml1000.buject.OcfDevice.subtype.ThermostatSML1000.ThermostatSML1000 import ThermostatSML1000 as Device
+from bubot_modbus.buject.OcfDevice.subtype.SerialServerHF511.SerialServerHF511 import SerialServerHF511 as ModbusDevice
+from bubot.core.TestHelper import wait_run_device, wait_cancelled_device, get_config_path
 import logging
 import asyncio
 
 
 class TestThermostatSML1000(unittest.TestCase):
-    pass
+    net_interface = "192.168.1.11"
     config = {
         '/oic/con': {
-            'master': dict(href='/modbus_msg'),
+            'master': dict(),
             'slave': 0xa1,
             'baudRate': 9600,
             'parity': 'None',
             'dataBits': 8,
             'stopBits': 1,
-            'udpCoapPort': 17771,
-            'udpCoapIPv4': False,
-            'udpCoapIPv6': True
+            'udpCoapIPv6': None
         }
 
     }
@@ -31,97 +28,43 @@ class TestThermostatSML1000(unittest.TestCase):
             'parity': 0,
             'dataBits': 8,
             'stopBits': 2,
-            'udpCoapPort': 17772,
-            'udpCoapIPv4': False,
-            'udpCoapIPv6': True
+            'udpCoapIPv4': True,
+            'udpCoapIPv6': False
         }
     }
 
-    @async_test
-    async def setUp(self):
-        logging.basicConfig(level=logging.DEBUG)
-        self.config_path = get_config_path(__file__)
-        pass
+    async def asyncSetUp(self) -> None:
+        self.modbus_device = ModbusDevice.init_from_file(di='2')
+        self.modbus_task = await wait_run_device(self.modbus_device)
+        self.config['/oic/con']['master']['anchor'] = self.modbus_device.link['anchor']
+        self.config['/oic/con']['master']['eps'] = self.modbus_device.link['eps']
+        self.config['/oic/con']['master']['eps'][0]['net_interface'] = self.net_interface
+        self.device = Device.init_from_config(self.config, di='1')
+        self.device_task = await wait_run_device(self.device)
 
-    @async_test
-    async def test_init(self):
-        self.assertIn('/light', self.device.data)
-        self.assertListEqual(self.device.data['/light']['rt'], ['oic.r.switch.binary', 'oic.r.light.brightness'])
+    async def asyncTearDown(self) -> None:
+        await wait_cancelled_device(self.device, self.device_task)
+        await wait_cancelled_device(self.modbus_device, self.modbus_task)
 
-    @async_test
-    async def test_on_init(self):
-        await self.device.on_init()
-        pass
-
-    @async_test
-    async def test_power(self):
-        value = True
-        modbus_device = ModbusDevice.init_from_file('SerialServerHF511', '2')
-        modbus_task = await wait_run_device(modbus_device)
-        self.config['/oic/con']['master']['anchor'] = modbus_device.link['anchor']
-        self.config['/oic/con']['master']['eps'] = modbus_device.link['eps']
-        self.device = Device.init_from_config(self.config, path=self.config_path)
-        device_task = await wait_run_device(self.device)
-        await self.power(True)
-        await self.power(False)
-
-    async def power(self, value):
-        message = OcfRequest(op='update', to=dict(href='/power'), cn=dict(value=value))
-        result = await self.device.on_post_request(message)
-        print(result.get('value'))
-        message = OcfRequest(op='retrieve', to=dict(href='/power'))
-        result = await self.device.on_get_request(message)
-        print(result.get('value'))
-        self.assertEqual(result['value'], value)
-
-
-    @async_test
-    async def test_retrieve_color(self):
-        modbus_device = ModbusDevice.init_from_config(self.modbus_config, path=self.config_path)
-        modbus_task = await wait_run_device(modbus_device)
-        self.config['/oic/con']['master'] = modbus_device.link
-        self.device = Device.init_from_config(self.config, path=self.config_path)
-        device_task = await wait_run_device(self.device)
-        message = OcfRequest(op='retrieve', to=dict(href='/color'))
-        result = await self.device.on_get_request(message)
-        print(result)
-        # self.assertEqual(result['color'], value)
-        modbus_task.cancel()
-        device_task.cancel()
-        await modbus_task
-        await device_task
-
-        pass
-
-    @async_test
-    async def test_update_brightness(self):
-        brightness = 0
-        modbus_device = ModbusDevice.init_from_config(self.modbus_config, path=self.config_path)
-        modbus_task = await wait_run_device(modbus_device)
-        self.config['/oic/con']['master'] = modbus_device.link
-        self.device = Device.init_from_config(self.config, path=self.config_path)
-        device_task = await wait_run_device(self.device)
-        message = OcfRequest(op='update', to=dict(href='/brightness'), cn=dict(brightness=brightness))
-        result = await self.device.on_post_request(message)
-        self.assertEqual(result['brightness'], brightness)
-        modbus_task.cancel()
-        device_task.cancel()
-        pass
-
-    @async_test
     async def test_update_switch(self):
         value = False
-        modbus_device = ModbusDevice.init_from_config(self.modbus_config, path=self.config_path)
-        modbus_task = await wait_run_device(modbus_device)
-        self.config['/oic/con']['master'] = modbus_device.link
-        self.device = Device.init_from_config(self.config, path=self.config_path)
-        device_task = await wait_run_device(self.device)
-        message = OcfRequest(op='update', to=dict(href='/power'), cn=dict(value=value))
-        result = await self.device.on_post_request(message)
-        self.assertEqual(result['value'], value)
-        modbus_task.cancel()
-        device_task.cancel()
-        pass
+        result1 = (await self.device.retrieve_switch())['value']
+        result2 = (await self.device.update_switch(not result1))['value']
+        result3 = (await self.device.retrieve_switch())['value']
+        self.assertEqual(result3, not result1)
+        result4 = (await self.device.update_switch(result1))['value']
+        result5 = (await self.device.retrieve_switch())['value']
+        self.assertEqual(result5, result1)
+
+    async def test_update_switch(self):
+        value = False
+        result1 = (await self.device.retrieve_switch())['value']
+        result2 = (await self.device.update_switch(not result1))['value']
+        result3 = (await self.device.retrieve_switch())['value']
+        self.assertEqual(result3, not result1)
+        result4 = (await self.device.update_switch(result1))['value']
+        result5 = (await self.device.retrieve_switch())['value']
+        self.assertEqual(result5, result1)
 
     @async_test
     async def test_find_devices(self):

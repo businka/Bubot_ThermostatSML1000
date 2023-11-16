@@ -22,6 +22,35 @@
     "dataBits": 8,
     "stopBits": 1
   },
+  "/temperature/internal": {
+    "rt": [
+      "oic.r.temperature"
+    ],
+    "if": [
+      "oic.if.baseline"
+    ],
+    "temperature": null,
+    "units": "C",
+    "n": "Temperature internal",
+    "step": 0.5
+  },
+  "/temperature/external": {
+    "rt": [
+      "oic.r.temperature"
+    ],
+    "if": [
+      "oic.if.baseline"
+    ],
+    "temperature": null,
+    "units": "C",
+    "n": "Temperature external",
+    "step": 0.5
+  },
+  "/temperature/destination": {
+    "rt": [
+      "oic.r.temperature"
+    ]
+  },
   "/power": {
     "n": "Power",
     "rt": [
@@ -35,5 +64,10 @@
       "bm": 1
     },
     "value": false
+  },
+  "/oic/res": {
+    "rt": [
+      "oic.d.thermostat"
+    ]
   }
 }
