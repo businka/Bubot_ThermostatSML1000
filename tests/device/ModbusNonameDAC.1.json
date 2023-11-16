@@ -1,0 +1,27 @@
+{
+  "/oic/d": {
+    "piid": "5cf070f1-df4c-4c1c-a85d-acf0610d5ecc",
+    "di": "1"
+  },
+  "/oic/con": {
+    "udpCoapPort": 65515,
+    "slave": 10,
+    "master": {
+      "anchor": "ocf://3",
+      "eps": [
+        {
+          "ep": "coap://192.168.1.11:61169",
+          "net_interface": "192.168.1.11"
+        }
+      ]
+    }
+  },
+  "/oic/sec/doxm": {
+    "deviceuuid": "1"
+  },
+  "/oic/sec/pstat": {
+    "dos": {
+      "s": 0
+    }
+  }
+}

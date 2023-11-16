@@ -1,6 +1,6 @@
 {
   "/oic/d": {
-    "di": "6d350e5d-8b7c-459e-a671-e5860b318796"
+    "di": "3"
   },
   "/oic/con": {
     "udpCoapPort": 61169,

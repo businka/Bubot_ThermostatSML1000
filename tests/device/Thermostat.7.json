@@ -1,0 +1,41 @@
+{
+  "/oic/d": {
+    "piid": "6d3bdf12-4f4f-4c21-8af4-72ce2de29a9c",
+    "di": "7"
+  },
+  "/oic/con": {
+    "udpCoapPort": 61264,
+    "temperatureResURI": {
+      "href": "/temperature",
+      "anchor": "ocf://4",
+      "eps": [
+        {
+          "ep": "coap://192.168.1.11:53077",
+          "net_interface": "192.168.1.11"
+        }
+      ]
+    },
+    "actuatorResURI": {
+      "href": "/v3",
+      "anchor": "ocf://1",
+      "eps": [
+        {
+          "ep": "coap://192.168.1.11:65515",
+          "net_interface": "192.168.1.11"
+        }
+      ]
+    },
+    "updateTime": 10
+  },
+  "/oic/sec/doxm": {
+    "deviceuuid": "7"
+  },
+  "/oic/sec/pstat": {
+    "dos": {
+      "s": 0
+    }
+  },
+  "/desired_temperature": {
+    "temperature": 23.5
+  }
+}

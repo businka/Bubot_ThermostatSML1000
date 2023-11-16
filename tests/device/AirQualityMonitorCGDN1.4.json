@@ -1,0 +1,27 @@
+{
+  "/oic/p": {
+    "mnpv": "0.0.9",
+    "mnmn": "miio",
+    "mnml": "python-miio",
+    "mnmo": "cgllc.airm.cgdn1",
+    "mnsel": 310387112,
+    "mnhw": "esp32/2.1.7_0421"
+  },
+  "/oic/d": {
+    "di": "4",
+    "piid": "27dc6ecb-2140-4dff-a3f1-f27790d348ff"
+  },
+  "/oic/con": {
+    "udpCoapPort": 53077,
+    "ip": "192.168.1.131",
+    "token": "59c88a633dc450b11cc2ea6165aa685e"
+  },
+  "/oic/sec/doxm": {
+    "deviceuuid": "aacd1000-0000-0000-0000-000000000018"
+  },
+  "/oic/sec/pstat": {
+    "dos": {
+      "s": 0
+    }
+  }
+}

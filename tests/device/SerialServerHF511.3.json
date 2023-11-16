@@ -1,0 +1,21 @@
+{
+  "/oic/d": {
+    "di": "3",
+    "piid": "81eb4193-f9ca-4f0e-829e-f4f51e91658d"
+  },
+  "/oic/con": {
+    "udpCoapPort": 61169,
+    "host": "192.168.1.25"
+  },
+  "/oic/sec/pstat": {
+    "dos": {
+      "s": 0
+    }
+  },
+  "/modbus_msg": {
+    "slave": 130,
+    "function": 4,
+    "pdu": "ANwAFQ==",
+    "answerSize": 44
+  }
+}
